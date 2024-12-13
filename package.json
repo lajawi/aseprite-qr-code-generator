@@ -1,0 +1,24 @@
+{
+    "name": "lajawi-qr-code-gen",
+    "displayName": "QR-Code Generator",
+    "description": "Generate a pixel-perfect QR-Code",
+    "version": "0.0.1",
+    "author": {
+        "name": "lajawi",
+        "email": "",
+        "url": "https://github.com/lajawi"
+    },
+    "contributors": [],
+    "publisher": "lajawi",
+    "license": "GPL-3.0-only",
+    "categories": [
+        "Scripts"
+    ],
+    "contributes": {
+        "scripts": [
+            {
+                "path": "./qr-packer.lua"
+            }
+        ]
+    }
+}
