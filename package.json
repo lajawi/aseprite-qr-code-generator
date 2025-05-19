@@ -1,8 +1,8 @@
 {
     "name": "lajawi-qr-code-gen",
     "displayName": "QR-Code Generator",
-    "description": "Generate a pixel-perfect QR-Code",
-    "version": "0.0.1",
+    "description": "Generate pixel-perfect QR-Codes quickly",
+    "version": "1.0.0",
     "author": {
         "name": "lajawi",
         "email": "",
