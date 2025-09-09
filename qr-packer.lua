@@ -82,6 +82,19 @@ function init(plugin)
                 end
             }
 
+            dialog:separator{
+                id = "licenses",
+                text = "Licenses"
+            }
+            dialog:button{
+                id = "licenses_button",
+                text = "Open Licenses",
+                onclick = function()
+                    dialog:close()
+                    show_licenses()
+                end
+            }
+
             dialog:show{
                 wait = false
             }
@@ -122,4 +135,60 @@ function generate_qr_code(dialog)
     end
 
     dialog:close()
+end
+
+function show_licenses()
+    local dialog = Dialog("QR-Code Generator Licenses")
+    dialog:separator{
+        text = "Luaqrcode License"
+    }
+    dialog:label{
+        text = "All files in ./luaqrcode are subject to this license."
+    }
+    dialog:button{
+        text = "Open Luaqrcode License",
+        onclick = function()
+            print(read_relative_text_file("luaqrcode/License.md"))
+        end
+    }
+
+    dialog:separator{
+        text = "Lajawi Aseprite QR-Code Generator License"
+    }
+    dialog:label{
+        text = "All files in the extension besides the ones in ./luaqrcode are subject to this license."
+    }
+    dialog:button {
+        text = "Open License",
+        onclick = function()
+            print(read_relative_text_file("LICENSE"))
+        end
+    }
+    dialog:label{
+        text = "The full extension, including author and contributors can be found on GitHub."
+    }
+    dialog:newrow()
+    dialog:label{
+        text = "https://github.com/lajawi/aseprite-qr-code-generator/"
+    }
+
+    dialog:show{
+        wait = false
+    }
+end
+
+function absolute_path(file)
+    local path = app.fs.joinPath(app.fs.userConfigPath, "extensions", "lajawi-qr-code-gen", file)
+    return path
+end
+
+function read_text_file(file)
+    local f = assert(io.open(file, "r"))
+    local content = f:read("*all")
+    f:close()
+    return content
+end
+
+function read_relative_text_file(file)
+    return read_text_file(absolute_path(file))
 end

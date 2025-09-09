@@ -4,6 +4,7 @@
 
 ### Added
 
+- Licenses dialog
 - Changelog
 
 ### Fixed
