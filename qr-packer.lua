@@ -46,72 +46,80 @@ function init(plugin)
                 }
             end
 
-            local dlg = Dialog("QR-Code Generator")
-            dlg:entry{
+            local dialog = Dialog("QR-Code Generator")
+            dialog:entry{
                 id = "input",
                 label = "Text",
                 text = ""
             }
-            dlg:separator{
+            dialog:separator{
                 id = "separator",
                 text = "Colors"
             }
-            dlg:color{
+            dialog:color{
                 id = "color_black",
                 label = "QR Color",
                 color = c_black
             }
-            dlg:color{
+            dialog:color{
                 id = "color_white",
                 label = "Background",
                 color = c_white
             }
 
-            dlg:button{
+            dialog:button{
                 id = "confirm",
-                text = "Confirm"
-            }
-            dlg:button{
-                id = "cancel",
-                text = "Cancel"
-            }
-
-            dlg:show()
-
-            if not dlg.data.confirm then
-                return
-            end
-
-            local input = dlg.data.input
-            c_white = dlg.data.color_white
-            c_black = dlg.data.color_black
-
-            local ok, tab_or_message = qrencode.qrcode(input)
-            if not ok then
-                print(tab_or_message)
-            end
-
-            local sprite = Sprite(#tab_or_message + 2, #tab_or_message[1] + 2)
-            local pal = Palette(2)
-            pal:setColor(0, c_white)
-            pal:setColor(1, c_black)
-            sprite:setPalette(pal)
-
-            local img = app.image
-
-            for it in img:pixels() do
-                img:drawPixel(it.x, it.y, c_white)
-            end
-
-            for x = 1, #tab_or_message do
-                for y = 1, #tab_or_message[1] do
-                    if tab_or_message[x][y] < 0 then
-                        img:drawPixel(x, y, c_white)
-                    elseif tab_or_message[x][y] > 0 then
-                        img:drawPixel(x, y, c_black)
-                    end
+                text = "Confirm",
+                onclick = function()
+                    generate_qr_code(dialog)
                 end
-            end
+            }
+            dialog:button{
+                id = "cancel",
+                text = "Cancel",
+                onclick = function()
+                    dialog:close()
+                end
+            }
+
+            dialog:show{
+                wait = false
+            }
         end
     }
+end
+
+function generate_qr_code(dialog)
+    local input = dialog.data.input
+    c_white = dialog.data.color_white
+    c_black = dialog.data.color_black
+
+    local ok, tab_or_message = qrencode.qrcode(input)
+    if not ok then
+        print(tab_or_message)
+    end
+
+    local sprite = Sprite(#tab_or_message + 2, #tab_or_message[1] + 2)
+    local pal = Palette(2)
+    pal:setColor(0, c_white)
+    pal:setColor(1, c_black)
+    sprite:setPalette(pal)
+
+    local img = app.image
+
+    for it in img:pixels() do
+        img:drawPixel(it.x, it.y, c_white)
+    end
+
+    for x = 1, #tab_or_message do
+        for y = 1, #tab_or_message[1] do
+            if tab_or_message[x][y] < 0 then
+                img:drawPixel(x, y, c_white)
+            elseif tab_or_message[x][y] > 0 then
+                img:drawPixel(x, y, c_black)
+            end
+        end
+    end
+
+    dialog:close()
 end
