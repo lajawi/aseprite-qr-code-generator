@@ -178,7 +178,7 @@ function show_licenses()
 end
 
 function absolute_path(file)
-    local path = app.fs.joinPath(app.fs.userConfigPath, "extensions/lajawi-qr-code-gen", file)
+    local path = app.fs.joinPath(app.fs.userConfigPath, "extensions", "lajawi-qr-code-gen", file)
     return path
 end
 
