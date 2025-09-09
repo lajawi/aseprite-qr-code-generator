@@ -6,6 +6,10 @@
 
 - Changelog
 
+### Fixed
+
+- Changed the `dofile()` path to use forward slashes (`/`) instead of backwards slashes (`\\`)
+
 ## [1.0.0] - 2025.05.19
 
 ### Added
