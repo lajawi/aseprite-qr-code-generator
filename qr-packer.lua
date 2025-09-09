@@ -1,4 +1,4 @@
-qrencode = dofile("luaqrcode\\qrencode.lua")
+qrencode = dofile("./luaqrcode/qrencode.lua")
 
 -- This script requires UI
 if not app.isUIAvailable then
