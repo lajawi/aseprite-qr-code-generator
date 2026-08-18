@@ -7,6 +7,10 @@
 - Licenses dialog
 - Changelog
 
+### Changed
+
+- Updated the [Luaqrcode library](https://github.com/speedata/luaqrcode)
+
 ### Fixed
 
 - Changed the `dofile()` path to use forward slashes (`/`) instead of backwards slashes (`\\`)
