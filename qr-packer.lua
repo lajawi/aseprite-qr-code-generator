@@ -11,34 +11,34 @@ function init(plugin)
         title = "Generate QR-Code",
         group = "file_recent",
         onclick = function()
-            local c_white
-            local c_black
+            local c_bg
+            local c_qr
 
             local spr = app.activeSprite
             if spr then
                 local fg = app.fgColor
                 local bg = app.bgColor
 
-                c_white = Color {
-                    r = fg.red,
-                    g = fg.green,
-                    b = fg.blue,
-                    a = fg.alpha
-                }
-                c_black = Color {
+                c_bg = Color {
                     r = bg.red,
                     g = bg.green,
                     b = bg.blue,
                     a = bg.alpha
                 }
+                c_qr = Color {
+                    r = fg.red,
+                    g = fg.green,
+                    b = fg.blue,
+                    a = fg.alpha
+                }
             else
-                c_white = Color {
+                c_bg = Color {
                     r = 255,
                     g = 255,
                     b = 255,
                     a = 255
                 }
-                c_black = Color {
+                c_qr = Color {
                     r = 0,
                     g = 0,
                     b = 0,
@@ -57,14 +57,14 @@ function init(plugin)
                 text = "Colors"
             }
             dialog:color{
-                id = "color_black",
+                id = "color_qr",
                 label = "QR Color",
-                color = c_black
+                color = c_qr
             }
             dialog:color{
-                id = "color_white",
+                id = "color_bg",
                 label = "Background",
-                color = c_white
+                color = c_bg
             }
 
             dialog:button{
@@ -104,8 +104,8 @@ end
 
 function generate_qr_code(dialog)
     local input = dialog.data.input
-    c_white = dialog.data.color_white
-    c_black = dialog.data.color_black
+    local c_bg = dialog.data.color_bg
+    local c_qr = dialog.data.color_qr
 
     local ok, tab_or_message = qrencode.qrcode(input)
     if not ok then
@@ -114,12 +114,12 @@ function generate_qr_code(dialog)
 
     local sprite = Sprite(#tab_or_message + 2, #tab_or_message[1] + 2)
     local pal = Palette(2)
-    pal:setColor(0, c_white)
-    pal:setColor(1, c_black)
+    pal:setColor(0, c_bg)
+    pal:setColor(1, c_qr)
     sprite:setPalette(pal)
     sprite.layers[1].name = "Background"
 
-    app.bgColor = c_white
+    app.bgColor = c_bg
     app.command.BackgroundFromLayer()
 
     local layer = sprite:newLayer()
@@ -129,7 +129,7 @@ function generate_qr_code(dialog)
     for x = 1, #tab_or_message do
         for y = 1, #tab_or_message[1] do
             if tab_or_message[x][y] > 0 then
-                app.image:drawPixel(x, y, c_black)
+                app.image:drawPixel(x, y, c_qr)
             end
         end
     end
