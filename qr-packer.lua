@@ -50,7 +50,8 @@ function init(plugin)
             dialog:entry{
                 id = "input",
                 label = "Text",
-                text = ""
+                text = "",
+                focus = true
             }
             dialog:separator{
                 id = "separator",
@@ -70,6 +71,7 @@ function init(plugin)
             dialog:button{
                 id = "confirm",
                 text = "Confirm",
+                focus = true,
                 onclick = function()
                     generate_qr_code(dialog)
                 end
