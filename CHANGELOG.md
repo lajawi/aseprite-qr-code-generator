@@ -10,6 +10,7 @@
 ### Changed
 
 - Updated the [Luaqrcode library](https://github.com/speedata/luaqrcode)
+- Fore- and background are separated onto two layers
 
 ### Fixed
 

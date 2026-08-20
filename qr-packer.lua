@@ -117,19 +117,19 @@ function generate_qr_code(dialog)
     pal:setColor(0, c_white)
     pal:setColor(1, c_black)
     sprite:setPalette(pal)
+    sprite.layers[1].name = "Background"
 
-    local img = app.image
+    app.bgColor = c_white
+    app.command.BackgroundFromLayer()
 
-    for it in img:pixels() do
-        img:drawPixel(it.x, it.y, c_white)
-    end
+    local layer = sprite:newLayer()
+    layer.name = "QR-Code"
+    sprite:newCel(layer, 1)
 
     for x = 1, #tab_or_message do
         for y = 1, #tab_or_message[1] do
-            if tab_or_message[x][y] < 0 then
-                img:drawPixel(x, y, c_white)
-            elseif tab_or_message[x][y] > 0 then
-                img:drawPixel(x, y, c_black)
+            if tab_or_message[x][y] > 0 then
+                app.image:drawPixel(x, y, c_black)
             end
         end
     end
