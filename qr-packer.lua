@@ -47,30 +47,29 @@ function init(plugin)
             end
 
             local dialog = Dialog("QR-Code Generator")
+            dialog:separator{
+                text = "Data:",
+            }
             dialog:entry{
                 id = "input",
-                label = "Text",
-                text = "",
+                text = "https://example.com",
                 focus = true
             }
             dialog:separator{
-                id = "separator",
-                text = "Colors"
+                text = "Colors:"
             }
             dialog:color{
                 id = "color_qr",
-                label = "QR Color",
                 color = c_qr
             }
             dialog:color{
                 id = "color_bg",
-                label = "Background",
                 color = c_bg
             }
 
             dialog:button{
                 id = "confirm",
-                text = "Confirm",
+                text = "OK",
                 focus = true,
                 onclick = function()
                     generate_qr_code(dialog)
@@ -86,7 +85,7 @@ function init(plugin)
 
             dialog:separator{
                 id = "licenses",
-                text = "Licenses"
+                text = "Licenses:"
             }
             dialog:button{
                 id = "licenses_button",
