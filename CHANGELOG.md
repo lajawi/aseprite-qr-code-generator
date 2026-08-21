@@ -11,6 +11,7 @@
 
 - Updated the [Luaqrcode library](https://github.com/speedata/luaqrcode)
 - Fore- and background are separated onto two layers
+- Dialog must be dismissed before you can interact with the rest of the application again
 
 ### Fixed
 

@@ -98,7 +98,7 @@ function init(plugin)
             }
 
             dialog:show{
-                wait = false
+                wait = true
             }
         end
     }
