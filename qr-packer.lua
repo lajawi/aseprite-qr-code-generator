@@ -149,7 +149,7 @@ function show_licenses()
     dialog:button{
         text = "Open Luaqrcode License",
         onclick = function()
-            print(read_relative_text_file("luaqrcode/License.md"))
+            read_license(dialog, "luaqrcode/License.md")
         end
     }
 
@@ -162,7 +162,7 @@ function show_licenses()
     dialog:button {
         text = "Open License",
         onclick = function()
-            print(read_relative_text_file("LICENSE"))
+            read_license(dialog, "LICENSE")
         end
     }
     dialog:label{
@@ -184,12 +184,32 @@ function absolute_path(file)
 end
 
 function read_text_file(file)
-    local f = assert(io.open(file, "r"))
-    local content = f:read("*all")
-    f:close()
-    return content
+    local lines = {}
+    for line in io.lines(file) do
+        table.insert(lines, line)
+    end
+    return lines
 end
 
 function read_relative_text_file(file)
     return read_text_file(absolute_path(file))
+end
+
+function read_license(dialog, file)
+    local lic_dialog = Dialog{
+        title = "License",
+        parent = dialog
+    }:newrow{ always = true }
+
+    local license = read_relative_text_file(file)
+    for i = 1, #license do
+        lic_dialog:label{
+            text = license[i]
+        }
+    end
+
+    lic_dialog:show{
+        wait = true,
+        autoscrollbars = true
+    }
 end
