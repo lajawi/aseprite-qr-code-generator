@@ -6,6 +6,8 @@
 
 - Licenses dialog
 - Changelog
+- Error correction level setting
+	- Setting is only used when `Use Advanced Opions` is enabled
 
 ### Changed
 
