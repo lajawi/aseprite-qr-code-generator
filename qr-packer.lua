@@ -95,6 +95,10 @@ function init(plugin)
                 text = "Use Advanced Options",
                 onclick = function()
                     local vis = dialog.data.adv_options
+                    dialog:modify{
+                        id = "ec_label",
+                        visible = vis,
+                    }
                     for _,ec in ipairs(ec_levels) do
                         dialog:modify{
                             id = ec.id,
@@ -103,9 +107,9 @@ function init(plugin)
                     end
                 end
             }
-            dialog:label{
+            dialog:separator{
                 id = "ec_label",
-                text = "Error Correction Level",
+                text = "Error Correction Level:",
                 visible = false,
             }
 
