@@ -5,6 +5,13 @@ if not app.isUIAvailable then
     return
 end
 
+local ec_level_ids = {
+    "ec_l",
+    "ec_m",
+    "ec_q",
+    "ec_h",
+}
+
 function init(plugin)
     plugin:newCommand{
         id = "qr_code_gen",
@@ -66,6 +73,29 @@ function init(plugin)
                 id = "color_bg",
                 color = c_bg
             }
+            dialog:check{
+                id = "adv_options",
+                text = "Use Advanced Options",
+                onclick = function()
+                    local vis = dialog.data.adv_options
+                    for i = 1, #ec_level_ids do
+                        dialog:modify{
+                            id = ec_level_ids[i],
+                            visible = vis,
+                        }
+                    end
+                end
+            }
+            dialog:label{
+                id = "ec_label",
+                text = "Error Correction Level",
+                visible = false,
+            }
+            dialog
+                :radio{ id = "ec_l", visible = false, text = "Low" }
+                :radio{ id = "ec_m", visible = false, text = "Medium" }
+                :radio{ id = "ec_q", visible = false, text = "Quartile" }
+                :radio{ id = "ec_h", visible = false, text = "High", selected = true }
 
             dialog:button{
                 id = "confirm",
@@ -107,8 +137,22 @@ function generate_qr_code(dialog)
     local input = dialog.data.input
     local c_bg = dialog.data.color_bg
     local c_qr = dialog.data.color_qr
+    local use_adv_opts = dialog.data.adv_options
+    local ec_level = 4
 
-    local ok, tab_or_message = qrencode.qrcode(input)
+    for i = 1, #ec_level_ids do
+        if dialog.data[ec_level_ids[i]] then
+            ec_level = i
+        end
+    end
+
+    local ok, tab_or_message
+    if use_adv_opts then
+        ok, tab_or_message = qrencode.qrcode(input, ec_level)
+    else
+        ok, tab_or_message = qrencode.qrcode(input)
+    end
+
     if not ok then
         print(tab_or_message)
     end
