@@ -5,11 +5,28 @@ if not app.isUIAvailable then
     return
 end
 
-local ec_level_ids = {
-    "ec_l",
-    "ec_m",
-    "ec_q",
-    "ec_h",
+local ec_low = {
+    id = "ec_l",
+    text = "Low",
+}
+local ec_medium = {
+    id = "ec_m",
+    text = "Medium",
+}
+local ec_quartile = {
+    id = "ec_q",
+    text = "Quartile",
+}
+local ec_high = {
+    id = "ec_h",
+    text = "High",
+}
+
+local ec_levels = {
+    ec_low,
+    ec_medium,
+    ec_quartile,
+    ec_high
 }
 
 function init(plugin)
@@ -78,9 +95,9 @@ function init(plugin)
                 text = "Use Advanced Options",
                 onclick = function()
                     local vis = dialog.data.adv_options
-                    for i = 1, #ec_level_ids do
+                    for _,ec in ipairs(ec_levels) do
                         dialog:modify{
-                            id = ec_level_ids[i],
+                            id = ec.id,
                             visible = vis,
                         }
                     end
@@ -91,11 +108,18 @@ function init(plugin)
                 text = "Error Correction Level",
                 visible = false,
             }
-            dialog
-                :radio{ id = "ec_l", visible = false, text = "Low" }
-                :radio{ id = "ec_m", visible = false, text = "Medium" }
-                :radio{ id = "ec_q", visible = false, text = "Quartile" }
-                :radio{ id = "ec_h", visible = false, text = "High", selected = true }
+
+            for _,ec in ipairs(ec_levels) do
+                dialog:radio{
+                    id = ec.id,
+                    visible = false,
+                    text = ec.text,
+                }
+            end
+            dialog:modify{
+                id = ec_levels[#ec_levels].id,
+                selected = true,
+            }
 
             dialog:button{
                 id = "confirm",
@@ -140,8 +164,8 @@ function generate_qr_code(dialog)
     local use_adv_opts = dialog.data.adv_options
     local ec_level = 4
 
-    for i = 1, #ec_level_ids do
-        if dialog.data[ec_level_ids[i]] then
+    for i,ec in ipairs(ec_levels) do
+        if dialog.data[ec.id] then
             ec_level = i
         end
     end
