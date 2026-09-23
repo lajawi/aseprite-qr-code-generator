@@ -113,6 +113,7 @@ function init(plugin)
                 visible = false,
             }
 
+            dialog:newrow{ always = true }
             for _,ec in ipairs(ec_levels) do
                 dialog:radio{
                     id = ec.id,
@@ -124,6 +125,7 @@ function init(plugin)
                 id = ec_levels[#ec_levels].id,
                 selected = true,
             }
+            dialog:newrow{ always = false }
 
             dialog:button{
                 id = "confirm",
