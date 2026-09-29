@@ -61,15 +61,37 @@ licenses_dialog:separator{ text = "Luaqrcode License" }
 :label{ text = "https://github.com/lajawi/aseprite-qr-code-generator/" }
 --#endregion
 
-local function generate_qr_code(dialog)
-    local input = dialog.data.input
-    local c_bg = dialog.data.color_bg
-    local c_qr = dialog.data.color_qr
-    local use_adv_opts = dialog.data.adv_options
+local main_dialog = Dialog("QR-Code Generator")
+
+local color_bg
+local color_qr
+
+local function set_colors()
+    local spr = app.activeSprite
+    if spr then
+        local fg = app.fgColor
+        local bg = app.bgColor
+
+        color_bg = Color{ r = bg.red, g = bg.green, b = bg.blue, a = bg.alpha }
+        color_qr = Color{ r = fg.red, g = fg.green, b = fg.blue, a = fg.alpha }
+    else
+        color_bg = Color{ r = 255, g = 255, b = 255, a = 255 }
+        color_qr = Color{ r = 0, g = 0, b = 0, a = 255 }
+    end
+
+    main_dialog:modify{ id = "color_bg", color = color_bg }
+    :modify{ id = "color_qr", color = color_qr }
+end
+
+local function generate_qr_code()
+    local input = main_dialog.data.input
+    local c_bg = main_dialog.data.color_bg
+    local c_qr = main_dialog.data.color_qr
+    local use_adv_opts = main_dialog.data.adv_options
     local ec_level = 4
 
     for i,ec in ipairs(ec_levels) do
-        if dialog.data[ec.id] then
+        if main_dialog.data[ec.id] then
             ec_level = i
         end
     end
@@ -107,8 +129,41 @@ local function generate_qr_code(dialog)
         end
     end
 
-    dialog:close()
+    main_dialog:close()
 end
+
+local function toggle_use_advanced_options()
+    local vis = main_dialog.data.adv_options
+    main_dialog:modify{ id = "ec_label", visible = vis }
+    for _,ec in ipairs(ec_levels) do
+        main_dialog:modify{ id = ec.id, visible = vis }
+    end
+end
+
+--#region Main Dialog
+main_dialog:separator{ text = "Data:" }
+:entry{ id = "input", text = "https://example.com", focus = true }
+:separator{ text = "Colors:" }
+:color{ id = "color_qr", color = color_qr }
+:color{ id = "color_bg", color = color_bg }
+:check{ id = "adv_options", text = "Use Advanced Options", onclick = toggle_use_advanced_options }
+:separator{ id = "ec_label", text = "Error Correction Level:", visible = false }
+:newrow{ always = true }
+for _,ec in ipairs(ec_levels) do
+    main_dialog:radio{ id = ec.id, visible = false, text = ec.text }
+end
+main_dialog:modify{ id = ec_levels[#ec_levels].id, selected = true }
+:newrow{ always = false }
+:button{ id = "confirm", text = "OK", focus = true, onclick = generate_qr_code }
+:button{ id = "cancel", text = "Cancel" }
+:separator{ id = "licenses", text = "Licenses:" }
+:button{ id = "licenses_button", text = "Open Licenses",
+    onclick = function()
+        main_dialog:close()
+        licenses_dialog:show{ wait = false }
+    end
+}
+--#endregion
 
 function init(plugin)
     plugin_name = plugin.name
@@ -118,130 +173,8 @@ function init(plugin)
         title = "Generate QR-Code",
         group = "file_recent",
         onclick = function()
-            local c_bg
-            local c_qr
-
-            local spr = app.activeSprite
-            if spr then
-                local fg = app.fgColor
-                local bg = app.bgColor
-
-                c_bg = Color {
-                    r = bg.red,
-                    g = bg.green,
-                    b = bg.blue,
-                    a = bg.alpha
-                }
-                c_qr = Color {
-                    r = fg.red,
-                    g = fg.green,
-                    b = fg.blue,
-                    a = fg.alpha
-                }
-            else
-                c_bg = Color {
-                    r = 255,
-                    g = 255,
-                    b = 255,
-                    a = 255
-                }
-                c_qr = Color {
-                    r = 0,
-                    g = 0,
-                    b = 0,
-                    a = 255
-                }
-            end
-
-            local dialog = Dialog("QR-Code Generator")
-            dialog:separator{
-                text = "Data:",
-            }
-            dialog:entry{
-                id = "input",
-                text = "https://example.com",
-                focus = true
-            }
-            dialog:separator{
-                text = "Colors:"
-            }
-            dialog:color{
-                id = "color_qr",
-                color = c_qr
-            }
-            dialog:color{
-                id = "color_bg",
-                color = c_bg
-            }
-            dialog:check{
-                id = "adv_options",
-                text = "Use Advanced Options",
-                onclick = function()
-                    local vis = dialog.data.adv_options
-                    dialog:modify{
-                        id = "ec_label",
-                        visible = vis,
-                    }
-                    for _,ec in ipairs(ec_levels) do
-                        dialog:modify{
-                            id = ec.id,
-                            visible = vis,
-                        }
-                    end
-                end
-            }
-            dialog:separator{
-                id = "ec_label",
-                text = "Error Correction Level:",
-                visible = false,
-            }
-
-            dialog:newrow{ always = true }
-            for _,ec in ipairs(ec_levels) do
-                dialog:radio{
-                    id = ec.id,
-                    visible = false,
-                    text = ec.text,
-                }
-            end
-            dialog:modify{
-                id = ec_levels[#ec_levels].id,
-                selected = true,
-            }
-            dialog:newrow{ always = false }
-
-            dialog:button{
-                id = "confirm",
-                text = "OK",
-                focus = true,
-                onclick = function()
-                    generate_qr_code(dialog)
-                end
-            }
-            dialog:button{
-                id = "cancel",
-                text = "Cancel",
-                onclick = function()
-                    dialog:close()
-                end
-            }
-
-            dialog:separator{
-                id = "licenses",
-                text = "Licenses:"
-            }
-            dialog:button{
-                id = "licenses_button",
-                text = "Open Licenses",
-                onclick = function()
-                    dialog:close()
-                    licenses_dialog:show{ wait = false }
-                end
-            }
-
-            dialog:show{
-                wait = true
-            }
+            set_colors()
+            main_dialog:show{ wait = true }
         end
     }
 end
