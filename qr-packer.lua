@@ -1,6 +1,5 @@
-qrencode = dofile("./luaqrcode/qrencode.lua")
+local Qrencode = dofile("./luaqrcode/qrencode.lua")
 
--- This script requires UI
 if not app.isUIAvailable then
     return
 end
@@ -28,6 +27,131 @@ local ec_levels = {
     ec_quartile,
     ec_high
 }
+
+local function absolute_path(file)
+    local path = app.fs.joinPath(app.fs.userConfigPath, "extensions", "lajawi-qr-code-gen", file)
+    return path
+end
+
+local function read_text_file(file)
+    local lines = {}
+    for line in io.lines(file) do
+        table.insert(lines, line)
+    end
+    return lines
+end
+
+local function read_relative_text_file(file)
+    return read_text_file(absolute_path(file))
+end
+
+local function read_license(dialog, file)
+    local lic_dialog = Dialog{
+        title = "License",
+        parent = dialog
+    }:newrow{ always = true }
+
+    local license = read_relative_text_file(file)
+    for i = 1, #license do
+        lic_dialog:label{
+            text = license[i]
+        }
+    end
+
+    lic_dialog:show{
+        wait = true,
+        autoscrollbars = true
+    }
+end
+
+local function show_licenses()
+    local dialog = Dialog("QR-Code Generator Licenses")
+    dialog:separator{
+        text = "Luaqrcode License"
+    }
+    dialog:label{
+        text = "All files in ./luaqrcode are subject to this license."
+    }
+    dialog:button{
+        text = "Open Luaqrcode License",
+        onclick = function()
+            read_license(dialog, "luaqrcode/License.md")
+        end
+    }
+
+    dialog:separator{
+        text = "Lajawi Aseprite QR-Code Generator License"
+    }
+    dialog:label{
+        text = "All files in the extension besides the ones in ./luaqrcode are subject to this license."
+    }
+    dialog:button {
+        text = "Open License",
+        onclick = function()
+            read_license(dialog, "LICENSE")
+        end
+    }
+    dialog:label{
+        text = "The full extension, including author and contributors can be found on GitHub."
+    }
+    dialog:newrow()
+    dialog:label{
+        text = "https://github.com/lajawi/aseprite-qr-code-generator/"
+    }
+
+    dialog:show{
+        wait = false
+    }
+end
+
+local function generate_qr_code(dialog)
+    local input = dialog.data.input
+    local c_bg = dialog.data.color_bg
+    local c_qr = dialog.data.color_qr
+    local use_adv_opts = dialog.data.adv_options
+    local ec_level = 4
+
+    for i,ec in ipairs(ec_levels) do
+        if dialog.data[ec.id] then
+            ec_level = i
+        end
+    end
+
+    local ok, tab_or_message
+    if use_adv_opts then
+        ok, tab_or_message = Qrencode.qrcode(input, ec_level)
+    else
+        ok, tab_or_message = Qrencode.qrcode(input)
+    end
+
+    if not ok then
+        print(tab_or_message)
+    end
+
+    local sprite = Sprite(#tab_or_message + 2, #tab_or_message[1] + 2)
+    local pal = Palette(2)
+    pal:setColor(0, c_bg)
+    pal:setColor(1, c_qr)
+    sprite:setPalette(pal)
+    sprite.layers[1].name = "Background"
+
+    app.bgColor = c_bg
+    app.command.BackgroundFromLayer()
+
+    local layer = sprite:newLayer()
+    layer.name = "QR-Code"
+    sprite:newCel(layer, 1)
+
+    for x = 1, #tab_or_message do
+        for y = 1, #tab_or_message[1] do
+            if tab_or_message[x][y] > 0 then
+                app.image:drawPixel(x, y, c_qr)
+            end
+        end
+    end
+
+    dialog:close()
+end
 
 function init(plugin)
     plugin:newCommand{
@@ -160,130 +284,5 @@ function init(plugin)
                 wait = true
             }
         end
-    }
-end
-
-function generate_qr_code(dialog)
-    local input = dialog.data.input
-    local c_bg = dialog.data.color_bg
-    local c_qr = dialog.data.color_qr
-    local use_adv_opts = dialog.data.adv_options
-    local ec_level = 4
-
-    for i,ec in ipairs(ec_levels) do
-        if dialog.data[ec.id] then
-            ec_level = i
-        end
-    end
-
-    local ok, tab_or_message
-    if use_adv_opts then
-        ok, tab_or_message = qrencode.qrcode(input, ec_level)
-    else
-        ok, tab_or_message = qrencode.qrcode(input)
-    end
-
-    if not ok then
-        print(tab_or_message)
-    end
-
-    local sprite = Sprite(#tab_or_message + 2, #tab_or_message[1] + 2)
-    local pal = Palette(2)
-    pal:setColor(0, c_bg)
-    pal:setColor(1, c_qr)
-    sprite:setPalette(pal)
-    sprite.layers[1].name = "Background"
-
-    app.bgColor = c_bg
-    app.command.BackgroundFromLayer()
-
-    local layer = sprite:newLayer()
-    layer.name = "QR-Code"
-    sprite:newCel(layer, 1)
-
-    for x = 1, #tab_or_message do
-        for y = 1, #tab_or_message[1] do
-            if tab_or_message[x][y] > 0 then
-                app.image:drawPixel(x, y, c_qr)
-            end
-        end
-    end
-
-    dialog:close()
-end
-
-function show_licenses()
-    local dialog = Dialog("QR-Code Generator Licenses")
-    dialog:separator{
-        text = "Luaqrcode License"
-    }
-    dialog:label{
-        text = "All files in ./luaqrcode are subject to this license."
-    }
-    dialog:button{
-        text = "Open Luaqrcode License",
-        onclick = function()
-            read_license(dialog, "luaqrcode/License.md")
-        end
-    }
-
-    dialog:separator{
-        text = "Lajawi Aseprite QR-Code Generator License"
-    }
-    dialog:label{
-        text = "All files in the extension besides the ones in ./luaqrcode are subject to this license."
-    }
-    dialog:button {
-        text = "Open License",
-        onclick = function()
-            read_license(dialog, "LICENSE")
-        end
-    }
-    dialog:label{
-        text = "The full extension, including author and contributors can be found on GitHub."
-    }
-    dialog:newrow()
-    dialog:label{
-        text = "https://github.com/lajawi/aseprite-qr-code-generator/"
-    }
-
-    dialog:show{
-        wait = false
-    }
-end
-
-function absolute_path(file)
-    local path = app.fs.joinPath(app.fs.userConfigPath, "extensions", "lajawi-qr-code-gen", file)
-    return path
-end
-
-function read_text_file(file)
-    local lines = {}
-    for line in io.lines(file) do
-        table.insert(lines, line)
-    end
-    return lines
-end
-
-function read_relative_text_file(file)
-    return read_text_file(absolute_path(file))
-end
-
-function read_license(dialog, file)
-    local lic_dialog = Dialog{
-        title = "License",
-        parent = dialog
-    }:newrow{ always = true }
-
-    local license = read_relative_text_file(file)
-    for i = 1, #license do
-        lic_dialog:label{
-            text = license[i]
-        }
-    end
-
-    lic_dialog:show{
-        wait = true,
-        autoscrollbars = true
     }
 end
