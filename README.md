@@ -10,7 +10,7 @@ Once installed, open Aseprite, go to `File > Generate QR-Code`, fill in your lin
 
 ## Install
 
-To install, download the file in [releases](https://github.com/lajawi/aseprite-qr-code-generator/releases/latest), then [add the extension](https://www.aseprite.org/docs/extensions#add/remove-extensions) via Aseprite's preferences. If the release is a `.aseprite-extension` file, you can also double click it to install.
+To install, download the file in [releases](https://codeberg.org/lajawi/aseprite-qr-code-generator/releases/latest), then [add the extension](https://www.aseprite.org/docs/extensions#add/remove-extensions) via Aseprite's preferences. If the release is a `.aseprite-extension` file, you can also double click it to install.
 
 ## License
 

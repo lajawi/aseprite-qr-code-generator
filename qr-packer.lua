@@ -67,7 +67,7 @@ licensesDialog
 	})
 	:label({ text = "The full extension, including author and contributors can be found on GitHub." })
 	:newrow()
-	:label({ text = "https://github.com/lajawi/aseprite-qr-code-generator/" })
+	:label({ text = "https://codeberg.org/lajawi/aseprite-qr-code-generator/" })
 --#endregion
 
 
