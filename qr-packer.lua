@@ -4,15 +4,21 @@ if not app.isUIAvailable then
 	return
 end
 
-local pluginName = ""
-local qrTable = {}
-
 local ERROR_CORRECTION_LEVELS = {
 	{ id = "ec_l", text = "Low" },
 	{ id = "ec_m", text = "Medium" },
 	{ id = "ec_q", text = "Quartile" },
 	{ id = "ec_h", text = "High" },
 }
+
+local pluginName = ""
+local qrTable = {}
+
+local mainDialog = Dialog("QR-Code Generator")
+local licensesDialog = Dialog("QR-Code Generator Licenses")
+
+local colorBg = Color({ r = 255, g = 255, b = 255, a = 255 })
+local colorQr = Color({ r = 0, g = 0, b = 0, a = 255 })
 
 local function absolutePath(file)
 	local path = app.fs.joinPath(app.fs.userConfigPath, "extensions", pluginName, file)
@@ -41,7 +47,6 @@ local function readLicense(dialog, file)
 end
 
 --#region Licenses Dialog
-local licensesDialog = Dialog("QR-Code Generator Licenses")
 licensesDialog
 	:separator({ text = "Luaqrcode License" })
 	:label({ text = "All files in ./luaqrcode are subject to this license." })
@@ -64,10 +69,6 @@ licensesDialog
 	:label({ text = "https://github.com/lajawi/aseprite-qr-code-generator/" })
 --#endregion
 
-local mainDialog = Dialog("QR-Code Generator")
-
-local colorBg
-local colorQr
 
 local function setQrTable()
 	local input = mainDialog.data.input
