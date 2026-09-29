@@ -31,63 +31,35 @@ local function read_relative_text_file(file)
 end
 
 local function read_license(dialog, file)
-    local lic_dialog = Dialog{
-        title = "License",
-        parent = dialog
-    }:newrow{ always = true }
-
+    local lic_dialog = Dialog{ title = "License", parent = dialog}
+    :newrow{ always = true }
     local license = read_relative_text_file(file)
     for i = 1, #license do
-        lic_dialog:label{
-            text = license[i]
-        }
+        lic_dialog:label{ text = license[i] }
     end
-
-    lic_dialog:show{
-        wait = true,
-        autoscrollbars = true
-    }
+    lic_dialog:show{ wait = true, autoscrollbars = true }
 end
 
-local function show_licenses()
-    local dialog = Dialog("QR-Code Generator Licenses")
-    dialog:separator{
-        text = "Luaqrcode License"
-    }
-    dialog:label{
-        text = "All files in ./luaqrcode are subject to this license."
-    }
-    dialog:button{
-        text = "Open Luaqrcode License",
-        onclick = function()
-            read_license(dialog, "luaqrcode/License.md")
-        end
-    }
-
-    dialog:separator{
-        text = "Lajawi Aseprite QR-Code Generator License"
-    }
-    dialog:label{
-        text = "All files in the extension besides the ones in ./luaqrcode are subject to this license."
-    }
-    dialog:button {
-        text = "Open License",
-        onclick = function()
-            read_license(dialog, "LICENSE")
-        end
-    }
-    dialog:label{
-        text = "The full extension, including author and contributors can be found on GitHub."
-    }
-    dialog:newrow()
-    dialog:label{
-        text = "https://github.com/lajawi/aseprite-qr-code-generator/"
-    }
-
-    dialog:show{
-        wait = false
-    }
-end
+--#region Licenses Dialog
+local licenses_dialog = Dialog("QR-Code Generator Licenses")
+licenses_dialog:separator{ text = "Luaqrcode License" }
+:label{ text = "All files in ./luaqrcode are subject to this license." }
+:button{ text = "Open Luaqrcode License",
+    onclick = function()
+        read_license(licenses_dialog, "luaqrcode/License.md")
+    end
+}
+:separator{ text = "Lajawi Aseprite QR-Code Generator License" }
+:label{ text = "All files in the extension besides the ones in ./luaqrcode are subject to this license." }
+:button { text = "Open License",
+    onclick = function()
+        read_license(licenses_dialog, "LICENSE")
+    end
+}
+:label{ text = "The full extension, including author and contributors can be found on GitHub." }
+:newrow()
+:label{ text = "https://github.com/lajawi/aseprite-qr-code-generator/" }
+--#endregion
 
 local function generate_qr_code(dialog)
     local input = dialog.data.input
@@ -263,7 +235,7 @@ function init(plugin)
                 text = "Open Licenses",
                 onclick = function()
                     dialog:close()
-                    show_licenses()
+                    licenses_dialog:show{ wait = false }
                 end
             }
 
