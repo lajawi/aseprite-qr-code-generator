@@ -5,6 +5,7 @@ if not app.isUIAvailable then
 end
 
 local pluginName = ""
+local qrTable = {}
 
 local ERROR_CORRECTION_LEVELS = {
     { id = "ec_l", text = "Low" },
@@ -66,7 +67,32 @@ local mainDialog = Dialog("QR-Code Generator")
 local colorBg
 local colorQr
 
-local function setColors()
+local function setQrTable()
+    local input = mainDialog.data.input
+    local useAdvancedOptions = mainDialog.data.adv_options
+    local errorCorrectionLevel = 4
+    for i,ec in ipairs(ERROR_CORRECTION_LEVELS) do
+        if mainDialog.data[ec.id] then
+            errorCorrectionLevel = i
+        end
+    end
+
+    local ok, tableOrMessage
+    if useAdvancedOptions then
+        ok, tableOrMessage = Qrencode.qrcode(input, errorCorrectionLevel)
+    else
+        ok, tableOrMessage = Qrencode.qrcode(input)
+    end
+
+    if not ok then
+        print(tableOrMessage)
+        return
+    end
+
+    qrTable = tableOrMessage
+end
+
+local function initColors()
     local spr = app.activeSprite
     if spr then
         local fg = app.fgColor
@@ -83,31 +109,28 @@ local function setColors()
     :modify{ id = "color_qr", color = colorQr }
 end
 
-local function generateQrCode()
-    local input = mainDialog.data.input
-    colorBg = mainDialog.data.color_bg
-    colorQr = mainDialog.data.color_qr
-    local useAdvancedOptions = mainDialog.data.adv_options
-    local errorCorrectionLevel = 4
+---@return Image
+local function getQrCodeImage()
+    setQrTable()
 
-    for i,ec in ipairs(ERROR_CORRECTION_LEVELS) do
-        if mainDialog.data[ec.id] then
-            errorCorrectionLevel = i
+    local image = Image(#qrTable + 2, #qrTable + 2)
+    for x = 1, #qrTable do
+        for y = 1, #qrTable[1] do
+            if qrTable[x][y] > 0 then
+                image:drawPixel(x, y, colorQr)
+            end
         end
     end
+    return image
+end
 
-    local ok, tableOrMessage
-    if useAdvancedOptions then
-        ok, tableOrMessage = Qrencode.qrcode(input, errorCorrectionLevel)
-    else
-        ok, tableOrMessage = Qrencode.qrcode(input)
-    end
+local function createSprite()
+    setQrTable()
 
-    if not ok then
-        print(tableOrMessage)
-    end
+    colorBg = mainDialog.data.color_bg
+    colorQr = mainDialog.data.color_qr
 
-    local sprite = Sprite(#tableOrMessage + 2, #tableOrMessage[1] + 2)
+    local sprite = Sprite(#qrTable + 2, #qrTable[1] + 2)
     local pal = Palette(2)
     pal:setColor(0, colorBg)
     pal:setColor(1, colorQr)
@@ -119,15 +142,7 @@ local function generateQrCode()
 
     local layer = sprite:newLayer()
     layer.name = "QR-Code"
-    sprite:newCel(layer, 1)
-
-    for x = 1, #tableOrMessage do
-        for y = 1, #tableOrMessage[1] do
-            if tableOrMessage[x][y] > 0 then
-                app.image:drawPixel(x, y, colorQr)
-            end
-        end
-    end
+    sprite:newCel(layer, 1, getQrCodeImage(), Point(0, 0))
 
     mainDialog:close()
 end
@@ -154,7 +169,7 @@ for _,ec in ipairs(ERROR_CORRECTION_LEVELS) do
 end
 mainDialog:modify{ id = ERROR_CORRECTION_LEVELS[#ERROR_CORRECTION_LEVELS].id, selected = true }
 :newrow{ always = false }
-:button{ id = "confirm", text = "OK", focus = true, onclick = generateQrCode }
+:button{ id = "confirm", text = "OK", focus = true, onclick = createSprite }
 :button{ id = "cancel", text = "Cancel" }
 :separator{ id = "licenses", text = "Licenses:" }
 :button{ id = "licenses_button", text = "Open Licenses",
@@ -173,7 +188,7 @@ function init(plugin)
         title = "Generate QR-Code",
         group = "file_recent",
         onclick = function()
-            setColors()
+            initColors()
             mainDialog:show{ wait = true }
         end
     }
