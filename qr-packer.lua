@@ -4,28 +4,11 @@ if not app.isUIAvailable then
     return
 end
 
-local ec_low = {
-    id = "ec_l",
-    text = "Low",
-}
-local ec_medium = {
-    id = "ec_m",
-    text = "Medium",
-}
-local ec_quartile = {
-    id = "ec_q",
-    text = "Quartile",
-}
-local ec_high = {
-    id = "ec_h",
-    text = "High",
-}
-
 local ec_levels = {
-    ec_low,
-    ec_medium,
-    ec_quartile,
-    ec_high
+    { id = "ec_l", text = "Low" },
+    { id = "ec_m", text = "Medium" },
+    { id = "ec_q", text = "Quartile" },
+    { id = "ec_h", text = "High" }
 }
 
 local function absolute_path(file)
