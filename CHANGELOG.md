@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+### Added
+
+- QR-Code Preview in the creation dialog
+	- Updates when the input has changed
+	- Updates when the colors have changed
+
 ### Changed
 
 - Refactored the code

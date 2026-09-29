@@ -4,6 +4,7 @@ if not app.isUIAvailable then
 	return
 end
 
+local LIVE_PREVIEW_WIDTH = 200
 local ERROR_CORRECTION_LEVELS = {
 	{ id = "ec_l", text = "Low" },
 	{ id = "ec_m", text = "Medium" },
@@ -113,8 +114,6 @@ end
 
 ---@return Image
 local function getQrCodeImage()
-	setQrTable()
-
 	local image = Image(#qrTable + 2, #qrTable + 2)
 	for x = 1, #qrTable do
 		for y = 1, #qrTable[1] do
@@ -157,13 +156,70 @@ local function toggleUseAdvancedOptions()
 	end
 end
 
+local function onInputChanged()
+	if not mainDialog.data.show_preview then
+		return
+	end
+
+	setQrTable()
+
+	mainDialog:repaint()
+end
+
+local function onColorsChanged()
+	if not mainDialog.data.show_preview then
+		return
+	end
+
+	colorBg = mainDialog.data.color_bg
+	colorQr = mainDialog.data.color_qr
+
+	mainDialog:repaint()
+end
+
+local function onShowPreviewClicked()
+	local vis = mainDialog.data.show_preview
+	mainDialog:modify({ id = "preview", visible = vis })
+	if vis then
+		onInputChanged()
+		onColorsChanged()
+		mainDialog:repaint()
+	end
+end
+
+local function onCanvasPaint(ev)
+	local ctx = ev.context
+
+	local imageBg = Image(#qrTable + 2, #qrTable + 2)
+	for x = 0, imageBg.width do
+		for y = 0, imageBg.height do
+			imageBg:drawPixel(x, y, colorBg)
+		end
+	end
+
+	local image = getQrCodeImage()
+
+	local rect = Rectangle( 0, 0, LIVE_PREVIEW_WIDTH, LIVE_PREVIEW_WIDTH )
+
+	ctx:drawThemeRect("sunken_normal", rect)
+
+	local imageRect = Rectangle(
+		rect.x + 3,
+		rect.y + 3,
+		rect.w - 6,
+		rect.h - 6
+	)
+	ctx:drawImage(imageBg, imageBg.bounds, imageRect)
+	ctx:drawImage(image, image.bounds, imageRect)
+end
+
 --#region Main Dialog
 mainDialog
 	:separator({ text = "Data:" })
-	:entry({ id = "input", text = "https://example.com", focus = true })
+	:entry({ id = "input", text = "https://example.com", focus = true, onchange = onInputChanged })
 	:separator({ text = "Colors:" })
-	:color({ id = "color_qr", color = colorQr })
-	:color({ id = "color_bg", color = colorBg })
+	:color({ id = "color_qr", color = colorQr, onchange = onColorsChanged })
+	:color({ id = "color_bg", color = colorBg, onchange = onColorsChanged })
 	:check({ id = "adv_options", text = "Use Advanced Options", onclick = toggleUseAdvancedOptions })
 	:separator({ id = "ec_label", text = "Error Correction Level:", visible = false })
 	:newrow({ always = true })
@@ -175,6 +231,8 @@ mainDialog
 	:newrow({ always = false })
 	:button({ id = "confirm", text = "OK", focus = true, onclick = createSprite })
 	:button({ id = "cancel", text = "Cancel" })
+	:check({ id = "show_preview", text = "Show Live Preview", onclick = onShowPreviewClicked })
+	:canvas({ id = "preview", width = LIVE_PREVIEW_WIDTH, height = LIVE_PREVIEW_WIDTH, visible = false, onpaint = onCanvasPaint })
 	:separator({ id = "licenses", text = "Licenses:" })
 	:button({
 		id = "licenses_button",
@@ -186,6 +244,8 @@ mainDialog
 	})
 --#endregion
 
+setQrTable()
+
 function init(plugin)
 	pluginName = plugin.name
 
@@ -195,6 +255,8 @@ function init(plugin)
 		group = "file_recent",
 		onclick = function()
 			initColors()
+			mainDialog:modify({ id = "show_preview", selected = false })
+			onShowPreviewClicked()
 			mainDialog:show({ wait = true })
 		end,
 	})
