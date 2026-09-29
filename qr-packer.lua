@@ -4,6 +4,8 @@ if not app.isUIAvailable then
     return
 end
 
+local plugin_name = ""
+
 local ec_levels = {
     { id = "ec_l", text = "Low" },
     { id = "ec_m", text = "Medium" },
@@ -12,7 +14,7 @@ local ec_levels = {
 }
 
 local function absolute_path(file)
-    local path = app.fs.joinPath(app.fs.userConfigPath, "extensions", "lajawi-qr-code-gen", file)
+    local path = app.fs.joinPath(app.fs.userConfigPath, "extensions", plugin_name, file)
     return path
 end
 
@@ -137,6 +139,8 @@ local function generate_qr_code(dialog)
 end
 
 function init(plugin)
+    plugin_name = plugin.name
+
     plugin:newCommand{
         id = "qr_code_gen",
         title = "Generate QR-Code",
