@@ -1,5 +1,14 @@
 # Changelog
 
+## [Unreleased]
+
+### Changed
+
+- Refactored the code
+	- Extracted variables from functions
+	- Separate functionality from functions
+	- Applied StyLua formatting
+
 ## [1.1.0] - 2026.09.23
 
 ### Added
