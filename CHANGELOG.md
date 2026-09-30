@@ -1,6 +1,6 @@
 # Changelog
 
-## [Unreleased]
+## [1.2.0]
 
 ### Added
 
@@ -43,6 +43,7 @@
 - [Luaqrcode library](https://github.com/speedata/luaqrcode)
 - QR-Code generator button
 
-[Unreleased]: https://codeberg.org/lajawi/aseprite-qr-code-generator/compare/v1.1.0...HEAD
+[Unreleased]: https://codeberg.org/lajawi/aseprite-qr-code-generator/compare/v1.2.0...HEAD
+[1.2.0]: https://codeberg.org/lajawi/aseprite-qr-code-generator/compare/v1.1.0...v1.2.0
 [1.1.0]: https://codeberg.org/lajawi/aseprite-qr-code-generator/compare/v1.0.0...v1.1.0
 [1.0.0]: https://codeberg.org/lajawi/aseprite-qr-code-generator/releases/tag/v1.0.0
