@@ -1,5 +1,11 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+
+- Links to license files in readme
+
 ## [1.2.0]
 
 ### Added

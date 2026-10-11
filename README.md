@@ -14,4 +14,4 @@ To install, download the file in [releases](https://codeberg.org/lajawi/aseprite
 
 ## License
 
-The [license](license) does not apply to the included [luaqrcode library](https://github.com/speedata/luaqrcode). Any files from said library are subject to their own [license](https://github.com/speedata/luaqrcode/tree/7f0cd4e3e82d8c217cbc848aa0a11036c2537d84?tab=License-1-ov-file).
+The [license](LICENSE) does not apply to the included [luaqrcode library](https://github.com/speedata/luaqrcode). Any files from said library are subject to their own [license](https://github.com/speedata/luaqrcode/tree/5a9c34bc04d5113048df8528af72ef31d25b7300?tab=License-1-ov-file).
